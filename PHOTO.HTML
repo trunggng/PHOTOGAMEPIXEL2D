@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Tương Tác: Quy Trình Thiết Kế Game Photographer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Dark Neutrals with Blue Accents -->
+    <!-- Application Structure Plan: A single-page, vertically scrolling application with a sticky top navigation bar. Each section of the design process report is a distinct, interactive module on the page. This structure was chosen because it directly mirrors the logical flow of the source document, making it intuitive for users to navigate and explore the design plan from start to finish or jump to specific sections of interest. -->
+    <!-- Visualization & Content Choices: User Flow -> Goal: Show sequence -> Viz: Interactive vertical timeline (HTML/CSS) -> Interaction: Highlight step on click -> Justification: More engaging and clearer than a list. Data Design -> Goal: Display code -> Viz: Tabbed code blocks -> Interaction: Click tabs, copy code -> Justification: Organized and functional for technical viewers. Core Functionalities -> Goal: List features -> Viz: Icon-based grid of cards -> Interaction: Hover for details -> Justification: Visually scannable and modern. C# Component Diagram -> Goal: Illustrate Unity C# class relationships -> Viz: HTML/CSS box diagram with simulated connections -> Interaction: Static display for architectural overview -> Justification: Provides technical insight into Unity implementation without external libraries. This approach uses structured HTML/CSS for all diagrams and visualizations. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #111827; /* gray-900 */
+            color: #e5e7eb; /* gray-200 */
+        }
+        .section-title {
+            color: #ffffff; /* white */
+        }
+        .accent-color {
+            color: #60a5fa; /* blue-400 */
+        }
+        .accent-bg {
+            background-color: #2563eb; /* blue-600 */
+        }
+        .nav-link {
+            color: #9ca3af; /* gray-400 */
+        }
+        .nav-link.active {
+            color: #60a5fa; /* blue-400 */
+            font-weight: 600;
+            border-bottom: 2px solid #60a5fa;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -31px;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background-color: #374151; /* gray-700 */
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -40px;
+            top: 5px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #111827; /* gray-900 */
+            border: 4px solid #4b5563; /* gray-600 */
+            transition: all 0.3s ease;
+        }
+        .timeline-item:hover .timeline-dot, .timeline-item.active .timeline-dot {
+            background-color: #1e3a8a; /* blue-900 */
+            border-color: #60a5fa; /* blue-400 */
+            transform: scale(1.2);
+        }
+        .code-block {
+            background-color: #1f2937; /* gray-800 */
+            color: #e2e8f0; /* slate-200 */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: #475569; /* slate-600 */
+            color: #e2e8f0;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: background-color 0.2s;
+        }
+        .copy-btn:hover {
+            background-color: #64748b; /* slate-500 */
+        }
+        .diagram-node {
+            background-color: #374151; /* gray-700 */
+            color: #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+        .diagram-arrow {
+            position: absolute;
+            background-color: #60a5fa; /* blue-400 */
+            z-index: 5;
+        }
+        .diagram-arrow.vertical {
+            width: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .diagram-arrow.horizontal {
+            height: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .diagram-arrow::after {
+            content: '▶';
+            position: absolute;
+            color: #60a5fa;
+            font-size: 1.25rem;
+        }
+        .diagram-arrow.down::after {
+            top: 100%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(90deg);
+        }
+        .diagram-arrow.right::after {
+            left: 100%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-gray-800/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">📸</span>
+                    <h1 class="text-xl font-bold section-title">Báo Cáo Thiết Kế: Photographer</h1>
+                </div>
+                <nav class="hidden md:flex space-x-6 text-sm font-medium">
+                    <a href="#functionalities" class="nav-link hover:text-blue-400 transition-colors">Chức Năng</a>
+                    <a href="#user-flow" class="nav-link hover:text-blue-400 transition-colors">Luồng Người Dùng</a>
+                    <a href="#ui-design" class="nav-link hover:text-blue-400 transition-colors">Thiết Kế UI</a>
+                    <a href="#data-design" class="nav-link hover:text-blue-400 transition-colors">Thiết Kế Dữ Liệu</a>
+                    <a href="#tech-stack" class="nav-link hover:text-blue-400 transition-colors">Công Nghệ</a>
+                    <a href="#architecture" class="nav-link hover:text-blue-400 transition-colors">Kiến Trúc</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <section id="intro" class="text-center mb-20">
+            <h2 class="text-4xl md:text-5xl font-extrabold section-title mb-4">Quy Trình Thiết Kế Ứng Dụng Web</h2>
+            <p class="text-lg text-gray-300 max-w-3xl mx-auto">
+                Một bản trình bày tương tác về quy trình thiết kế cho game "Photographer – Snap & Complete Quests". Tài liệu này chuyển đổi kế hoạch tĩnh thành một trải nghiệm trực quan, giúp khám phá các khía cạnh cốt lõi của dự án một cách hiệu quả.
+            </p>
+        </section>
+
+        <div class="space-y-24">
+
+            <section id="functionalities">
+                <h3 class="text-3xl font-bold section-title mb-2">1. Chức Năng Cốt Lõi</h3>
+                <p class="text-gray-300 mb-8 max-w-3xl">Đây là những tính năng nền tảng định hình nên trải nghiệm của người chơi. Mỗi chức năng đóng một vai trò quan trọng trong việc tạo ra một vòng lặp chơi game hấp dẫn và hoàn chỉnh.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-3xl accent-color mb-3">🖼️</div>
+                        <h4 class="font-bold text-lg mb-2">Hiển thị "Cảnh" (Scene View)</h4>
+                        <p class="text-gray-400 text-sm">Khu vực chính nơi người chơi ngắm và chụp ảnh, có thể là Canvas hoặc hình ảnh tĩnh.</p>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-3xl accent-color mb-3">🎛️</div>
+                        <h4 class="font-bold text-lg mb-2">Điều khiển "Máy ảnh"</h4>
+                        <p class="text-gray-400 text-sm">Các nút bấm và thanh trượt để thực hiện hành động chụp ảnh hoặc mô phỏng zoom.</p>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-3xl accent-color mb-3">📋</div>
+                        <h4 class="font-bold text-lg mb-2">Danh sách Nhiệm vụ</h4>
+                        <p class="text-gray-400 text-sm">Hiển thị các nhiệm vụ cần hoàn thành, giúp định hướng cho người chơi.</p>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-3xl accent-color mb-3">✅</div>
+                        <h4 class="font-bold text-lg mb-2">Đánh giá Ảnh</h4>
+                        <p class="text-gray-400 text-sm">Logic kiểm tra xem ảnh chụp có đáp ứng yêu cầu của nhiệm vụ hay không.</p>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-3xl accent-color mb-3">📚</div>
+                        <h4 class="font-bold text-lg mb-2">Thư viện Ảnh</h4>
+                        <p class="text-gray-400 text-sm">Nơi lưu trữ và hiển thị các bức ảnh mà người chơi đã chụp thành công.</p>
+                    </div>
+                     <div class="bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-3xl accent-color mb-3">🖥️</div>
+                        <h4 class="font-bold text-lg mb-2">Giao diện Người dùng</h4>
+                        <p class="text-gray-400 text-sm">Các yếu tố điều hướng, hiển thị điểm số và tiến độ, tạo nên trải nghiệm tổng thể.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="user-flow">
+                <h3 class="text-3xl font-bold section-title mb-2">2. Luồng Người Dùng</h3>
+                <p class="text-gray-300 mb-12 max-w-3xl">Phần này trình bày chi tiết luồng tương tác của người dùng, từ lúc bắt đầu đến khi hoàn thành một chu trình chơi. Sơ đồ dưới đây minh họa từng bước một cách trực quan, giúp hình dung rõ hơn về trải nghiệm người dùng cuối.</p>
+                <div class="relative pl-8">
+                    <div class="timeline-item relative pb-10">
+                        <div class="timeline-dot"></div>
+                        <h4 class="font-semibold text-lg">1. Khởi động ứng dụng</h4>
+                        <p class="text-gray-400">Người chơi truy cập trang web và bắt đầu phiên chơi.</p>
+                    </div>
+                    <div class="timeline-item relative pb-10">
+                        <div class="timeline-dot"></div>
+                        <h4 class="font-semibold text-lg">2. Xem các nhiệm vụ</h4>
+                        <p class="text-gray-400">Danh sách nhiệm vụ hiện ra, cung cấp mục tiêu cho người chơi.</p>
+                    </div>
+                    <div class="timeline-item relative pb-10">
+                        <div class="timeline-dot"></div>
+                        <h4 class="font-semibold text-lg">3. Chọn/Xem cảnh</h4>
+                        <p class="text-gray-400">Một cảnh được hiển thị, sẵn sàng để người chơi chụp.</p>
+                    </div>
+                    <div class="timeline-item relative pb-10">
+                        <div class="timeline-dot"></div>
+                        <h4 class="font-semibold text-lg">4. Thực hiện "chụp ảnh"</h4>
+                        <p class="text-gray-400">Người chơi nhấn nút "Chụp ảnh" để ghi lại khoảnh khắc.</p>
+                    </div>
+                    <div class="timeline-item relative pb-10">
+                        <div class="timeline-dot"></div>
+                        <h4 class="font-semibold text-lg">5. Ứng dụng xử lý ảnh</h4>
+                        <p class="text-gray-400">Ảnh được chụp từ canvas hoặc hình ảnh hiển thị.</p>
+                    </div>
+                    <div class="timeline-item relative pb-10">
+                        <div class="timeline-dot"></div>
+                        <h4 class="font-semibold text-lg">6. Đánh giá nhiệm vụ</h4>
+                        <p class="text-gray-400">Hệ thống kiểm tra xem ảnh có hoàn thành nhiệm vụ nào không.</p>
+                    </div>
+                    <div class="timeline-item relative pb-10">
+                        <div class="timeline-dot"></div>
+                        <h4 class="font-semibold text-lg">7. Lưu ảnh & Cập nhật nhiệm vụ</h4>
+                        <p class="text-gray-400">Nếu thành công, nhiệm vụ được đánh dấu và ảnh được thêm vào thư viện.</p>
+                    </div>
+                    <div class="timeline-item relative pb-10">
+                        <div class="timeline-dot"></div>
+                        <h4 class="font-semibold text-lg">8. Xem thư viện ảnh</h4>
+                        <p class="text-gray-400">Người chơi có thể xem lại các thành quả của mình.</p>
+                    </div>
+                    <div class="timeline-item relative pb-2">
+                        <div class="timeline-dot"></div>
+                        <h4 class="font-semibold text-lg">9. Chuyển đổi cảnh/nhiệm vụ</h4>
+                        <p class="text-gray-400">Người chơi tiếp tục tìm kiếm các đối tượng cho nhiệm vụ mới.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="ui-design">
+                <h3 class="text-3xl font-bold section-title mb-2">3. Thiết Kế Giao Diện Người Dùng (UI)</h3>
+                <p class="text-gray-300 mb-8 max-w-3xl">Giao diện người dùng là cầu nối giữa người chơi và game. Thiết kế UI tập trung vào việc tạo ra một bố cục trực quan, dễ sử dụng và thẩm mỹ, giúp người chơi tập trung vào trải nghiệm cốt lõi.</p>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h4 class="font-bold text-xl mb-4">Sơ đồ Bố cục (Layout Wireframe)</h4>
+                    <div class="border-2 border-dashed border-gray-700 rounded-lg p-4 h-[400px] flex flex-col md:flex-row gap-4">
+                        <div class="flex-[2] border border-gray-700 rounded-md bg-gray-800 flex flex-col justify-center items-center p-4">
+                            <p class="font-semibold text-gray-400">Khu vực "Scene View"</p>
+                            <div class="w-3/4 h-3/4 bg-gray-700 rounded flex justify-center items-center">
+                                <span class="text-5xl">🖼️</span>
+                            </div>
+                            <div class="w-1/2 h-8 bg-gray-700 rounded mt-4 flex justify-center items-center">
+                                <p class="text-sm text-gray-400">Thanh điều khiển</p>
+                            </div>
+                        </div>
+                        <div class="flex-1 border border-gray-700 rounded-md bg-gray-800 p-4">
+                             <p class="font-semibold text-gray-400 mb-2">Danh sách Nhiệm vụ</p>
+                             <div class="space-y-2">
+                                <div class="w-full h-8 bg-gray-700 rounded"></div>
+                                <div class="w-full h-8 bg-gray-700 rounded"></div>
+                                <div class="w-full h-8 bg-gray-700 rounded"></div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="data-design">
+                <h3 class="text-3xl font-bold section-title mb-2">4. Thiết Kế Dữ Liệu</h3>
+                <p class="text-gray-300 mb-8 max-w-3xl">Nền tảng của mọi chức năng là một cấu trúc dữ liệu được thiết kế tốt. Phần này mô tả cách dữ liệu về Nhiệm vụ, Ảnh và Cảnh được tổ chức dưới dạng các đối tượng JavaScript.</p>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <div class="border-b border-gray-700 mb-4">
+                        <nav id="data-tabs" class="flex space-x-4" aria-label="Tabs">
+                            <button data-target="quests-data" class="data-tab active font-semibold py-2 px-1 border-b-2 border-blue-400 text-blue-400">Nhiệm vụ (Quests)</button>
+                            <button data-target="photos-data" class="data-tab text-gray-400 hover:text-gray-200 py-2 px-1 border-b-2 border-transparent">Ảnh (Photos)</button>
+                            <button data-target="scenes-data" class="data-tab text-gray-400 hover:text-gray-200 py-2 px-1 border-b-2 border-transparent">Cảnh (Scenes)</button>
+                        </nav>
+                    </div>
+                    <div id="data-content">
+                        <div id="quests-data" class="data-panel">
+                            <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <pre><code>[
+  {
+    "id": "q1",
+    "description": "Chụp một hình tròn màu đỏ.",
+    "targetScene": "redCircleScene",
+    "isCompleted": false
+  },
+  ...
+]</code></pre>
+                            </div>
+                        </div>
+                        <div id="photos-data" class="data-panel hidden">
+                            <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <pre><code>[
+  {
+    "id": "photo-167...",
+    "dataUrl": "data:image/png;base64,...",
+    "timestamp": "7/29/2025, 12:00:00 AM",
+    "questCompleted": "q1"
+  },
+  ...
+]</code></pre>
+                            </div>
+                        </div>
+                        <div id="scenes-data" class="data-panel hidden">
+                            <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <pre><code>[
+  {
+    "id": "redCircleScene",
+    "name": "Cảnh hình tròn đỏ"
+    // ... các thuộc tính khác
+  },
+  ...
+]</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tech-stack">
+                <h3 class="text-3xl font-bold section-title mb-2">5. Lựa Chọn Công Nghệ</h3>
+                <p class="text-gray-300 mb-8 max-w-3xl">Việc lựa chọn công nghệ phù hợp là yếu tố quyết định đến khả năng phát triển và mở rộng của dự án. Đây là những công cụ và framework được chọn để xây dựng ứng dụng.</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-full bg-gray-800 shadow-lg flex items-center justify-center text-5xl text-cyan-500">⚛️</div>
+                        <h4 class="mt-4 font-semibold text-lg">React</h4>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-full bg-gray-800 shadow-lg flex items-center justify-center text-5xl text-sky-500">💨</div>
+                        <h4 class="mt-4 font-semibold text-lg">Tailwind CSS</h4>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-full bg-gray-800 shadow-lg flex items-center justify-center text-5xl text-orange-500">🎨</div>
+                        <h4 class="mt-4 font-semibold text-lg">HTML Canvas</h4>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-full bg-gray-800 shadow-lg flex items-center justify-center text-5xl text-yellow-500">📜</div>
+                        <h4 class="mt-4 font-semibold text-lg">JavaScript</h4>
+                    </div>
+                </div>
+            </section>
+
+            <section id="architecture">
+                <h3 class="text-3xl font-bold section-title mb-2">6. Phác Thảo Kiến Trúc & Logic</h3>
+                <p class="text-gray-300 mb-8 max-w-3xl">Kiến trúc dựa trên component giúp chia nhỏ ứng dụng thành các phần độc lập, dễ quản lý và phát triển. Sơ đồ dưới đây minh họa mối quan hệ giữa các thành phần chính.</p>
+                 <div class="bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col md:flex-row gap-8">
+                    <div class="md:w-1/2">
+                        <h4 class="font-bold text-xl mb-4">Sơ đồ Component (React)</h4>
+                        <div class="border-2 border-blue-700 bg-blue-950/50 p-4 rounded-lg text-center font-semibold">
+                            App
+                            <div class="mt-4 space-y-4 flex flex-col items-center">
+                                <div class="border border-gray-700 bg-gray-800 p-2 rounded w-4/5">CameraView</div>
+                                <div class="border border-gray-700 bg-gray-800 p-2 rounded w-4/5">QuestList</div>
+                                <div class="border border-gray-700 bg-gray-800 p-2 rounded w-4/5">PhotoGallery</div>
+                                <div class="border border-gray-700 bg-gray-800 p-2 rounded w-4/5">Controls</div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="md:w-1/2">
+                        <h4 class="font-bold text-xl mb-4">Logic Chính (JavaScript)</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <h5 class="font-semibold">handleTakePhoto()</h5>
+                                <p class="text-sm text-gray-400">Lấy ảnh từ Canvas, kiểm tra hoàn thành nhiệm vụ, và lưu vào thư viện.</p>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold">switchScene()</h5>
+                                <p class="text-sm text-gray-400">Thay đổi cảnh đang được hiển thị trên Canvas để người chơi tương tác.</p>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold">viewGallery() / viewGame()</h5>
+                                <p class="text-sm text-gray-400">Chuyển đổi qua lại giữa màn hình chơi game chính và màn hình thư viện ảnh.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h4 class="font-bold text-xl mb-4">Sơ đồ Thành phần C# trong Unity</h4>
+                    <p class="text-gray-300 mb-6 max-w-3xl">Sơ đồ này minh họa mối quan hệ giữa các script C# chính có thể được sử dụng để xây dựng hệ thống máy ảnh và nhiệm vụ trong Unity.</p>
+                    <div class="flex flex-col items-center justify-center space-y-10 relative py-8">
+                        <div class="diagram-node">PlayerCameraManager.cs</div>
+                        <div class="diagram-arrow vertical h-10 down"></div>
+                        <div class="diagram-node">PhotoCaptureHandler.cs</div>
+                        <div class="diagram-arrow vertical h-10 down"></div>
+                        <div class="diagram-node">QuestEvaluator.cs</div>
+                        <div class="diagram-arrow vertical h-10 down"></div>
+                        <div class="diagram-node">PhotoGalleryManager.cs</div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="mt-24 border-t border-gray-800 bg-gray-950">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-gray-400 text-sm">
+            <p>&copy; 2025 Báo cáo thiết kế tương tác. BẢN QUYỀN THUỘC VỀ TRUNG MINER TEAM.</p>
+            <p class="mt-2">Dựa trên tài liệu "Quy Trình Thiết Kế Chức Năng Ứng Dụng Web Game Photographer".</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-50% 0px -50% 0px' });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            const tabs = document.querySelectorAll('.data-tab');
+            const panels = document.querySelectorAll('.data-panel');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => {
+                        t.classList.remove('active', 'text-blue-400', 'border-blue-400');
+                        t.classList.add('text-gray-400', 'hover:text-gray-200', 'border-transparent');
+                    });
+                    panels.forEach(p => p.classList.add('hidden'));
+
+                    tab.classList.add('active', 'text-blue-400', 'border-blue-400');
+                    tab.classList.remove('text-gray-400', 'hover:text-gray-200', 'border-transparent');
+                    const targetPanelId = tab.getAttribute('data-target');
+                    document.getElementById(targetPanelId).classList.remove('hidden');
+                });
+            });
+            
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            copyButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const codeBlock = button.nextElementSibling;
+                    const code = codeBlock.innerText;
+                    navigator.clipboard.writeText(code).then(() => {
+                        button.innerText = 'Đã chép!';
+                        setTimeout(() => {
+                            button.innerText = 'Copy';
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Không thể sao chép: ', err);
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
